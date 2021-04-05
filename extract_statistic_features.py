@@ -1,0 +1,9 @@
+"""
+提取APK文件的静态特征：
+permission
+intent
+activity
+string
+api
+......
+"""
