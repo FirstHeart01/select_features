@@ -1,7 +1,7 @@
 import os
 import re
 
-from opcode_feature.infrastructure.smali import Smali
+from infrastructure.smali import Smali
 
 
 class Ware:
@@ -25,3 +25,4 @@ class Ware:
         for smali in self.smalis:
             feature += smali.getFeature()
         datafile.append(self.name, feature, self.isMalware)
+        return feature

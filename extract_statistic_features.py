@@ -7,20 +7,27 @@ string
 api
 ......
 """
+import csv
+import os
 
+from androguard.core.bytecodes.apk import APK
 from androguard.misc import AnalyzeAPK
+
+import utils
+
+permsList = utils.load_txt("default_permissions.txt")
 
 
 def extract(a):
     features = []
-    features.extend(extract_package(a))
+    # features.extend(extract_package(a))
     features.extend(extract_permission(a))
-    features.extend(extract_activities(a))
-    features.extend(extract_services(a))
-    features.extend(extract_receivers(a))
-    features.extend(extract_providers(a))
-    features.extend(extract_attr_features(a))
-    features.extend(extract_strings())
+    # features.extend(extract_activities(a))
+    # features.extend(extract_services(a))
+    # features.extend(extract_receivers(a))
+    # features.extend(extract_providers(a))
+    # features.extend(extract_attr_features(a))
+    # features.extend(extract_strings())
     return features
 
 
@@ -35,7 +42,7 @@ def extract_permission(a):
     features = []
     perms = a.get_permissions()
     perms.sort()
-    permsList = list(a.permission_module.keys())
+    print(len(a.permission_module.keys()))
     for perm in permsList:
         if perm in perms:
             features.append(1)
@@ -89,10 +96,31 @@ def extract_strings(dx):
     return features
 
 
-# 看一下字符串的个数
+def feature_to_csv(rootdir, isMalware):
+    data = []
+    data_path = "./permissions.csv"
+    files = os.listdir(rootdir)
+    for f in files:
+        features = []
+        try:
+            features.extend(extract(APK(rootdir+"/"+f)))
+        except Exception as e:
+            print("ERROR: {} {}".format(f, e))
+        features.append(isMalware)
+        data.append(features)
+    with open(data_path, 'a+', newline='') as f:
+        writer = csv.writer(f)
+        for i in range(len(data)):
+            if data[i]:
+                writer.writerow(data[i])
+
+
 if __name__ == '__main__':
-    filepath = "D:/AndroidMalware/benign/app-debug2.apk"
-    a, d, dx = AnalyzeAPK(filepath)
-    strings = dx.get_strings()
-    for i in strings:
-        print("{}\n".format(i))
+    BENIGN_PATH = "./dataset/benign"
+    MALWARE_PATH = "./dataset/malware"
+    print("————————————————————正在处理良性样本————————————————————————")
+    feature_to_csv(BENIGN_PATH, 0)
+    print("————————————————————良性样本处理完毕————————————————————————")
+    print("————————————————————正在处理恶意样本————————————————————————")
+    feature_to_csv(MALWARE_PATH, 1)
+    print("————————————————————恶意样本处理完毕————————————————————————")

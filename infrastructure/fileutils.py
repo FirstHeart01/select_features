@@ -5,7 +5,7 @@ import codecs
 class DataFile:
 
     def __init__(self, path):
-        self.f = codecs.open(path, 'w', encoding='utf-8')
+        self.f = codecs.open(path, 'a+', encoding='utf-8')
         self.f.write("SoftwareName,Feature,isMalware\n")
 
     def append(self, name, feature, isMalware):

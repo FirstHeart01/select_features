@@ -17,7 +17,7 @@ class Smali:
             if self.lines[begin].startswith(".method"):
                 return begin
             begin += 1
-        return -1;
+        return -1
 
     def __analyze_line(self, line):
         words = line.split()
